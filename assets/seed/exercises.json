@@ -1,0 +1,510 @@
+{
+ "equipment": [
+  "Barra Olímpica 20kg",
+  "Anilhas até 100kg",
+  "Anilhas até 200kg",
+  "Banco Reto",
+  "Banco Inclinado",
+  "Rack de Agachamento",
+  "Halteres até 10kg",
+  "Halteres até 30kg",
+  "Polia Alta",
+  "Polia Baixa",
+  "Crossover",
+  "Barra Fixa",
+  "Paralelas",
+  "Leg Press 45",
+  "Leg Press 90",
+  "Cadeira Extensora",
+  "Mesa Flexora",
+  "Cadeira Flexora",
+  "Peck Deck",
+  "Smith",
+  "Remada Máquina",
+  "Panturrilha Máquina",
+  "Cadeira Abdutora",
+  "Barra W",
+  "Kettlebell até 16kg",
+  "Elásticos",
+  "Desenvolvimento Máquina",
+  "Supino Máquina"
+ ],
+ "exercises": [
+  {
+   "name": "Supino Reto com Barra",
+   "primary": "peito",
+   "secondary": [
+    "triceps",
+    "ombros"
+   ],
+   "equipment": [
+    "Barra Olímpica 20kg",
+    "Anilhas até 100kg",
+    "Banco Reto"
+   ]
+  },
+  {
+   "name": "Supino Inclinado com Halteres",
+   "primary": "peito",
+   "secondary": [
+    "ombros",
+    "triceps"
+   ],
+   "equipment": [
+    "Halteres até 30kg",
+    "Banco Inclinado"
+   ]
+  },
+  {
+   "name": "Supino Máquina",
+   "primary": "peito",
+   "secondary": [
+    "triceps"
+   ],
+   "equipment": [
+    "Supino Máquina"
+   ]
+  },
+  {
+   "name": "Crucifixo no Peck Deck",
+   "primary": "peito",
+   "secondary": [],
+   "equipment": [
+    "Peck Deck"
+   ]
+  },
+  {
+   "name": "Crossover",
+   "primary": "peito",
+   "secondary": [],
+   "equipment": [
+    "Crossover"
+   ]
+  },
+  {
+   "name": "Flexão de Braço",
+   "primary": "peito",
+   "secondary": [
+    "triceps",
+    "ombros"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Mergulho nas Paralelas",
+   "primary": "peito",
+   "secondary": [
+    "triceps"
+   ],
+   "equipment": [
+    "Paralelas"
+   ]
+  },
+  {
+   "name": "Barra Fixa",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Barra Fixa"
+   ]
+  },
+  {
+   "name": "Puxada Alta",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Polia Alta"
+   ]
+  },
+  {
+   "name": "Remada Curvada com Barra",
+   "primary": "costas",
+   "secondary": [
+    "biceps",
+    "posteriores"
+   ],
+   "equipment": [
+    "Barra Olímpica 20kg",
+    "Anilhas até 100kg"
+   ]
+  },
+  {
+   "name": "Remada Unilateral com Halter",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Halteres até 30kg",
+    "Banco Reto"
+   ]
+  },
+  {
+   "name": "Remada Baixa na Polia",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Polia Baixa"
+   ]
+  },
+  {
+   "name": "Remada Máquina",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Remada Máquina"
+   ]
+  },
+  {
+   "name": "Remada Invertida com Elástico",
+   "primary": "costas",
+   "secondary": [
+    "biceps"
+   ],
+   "equipment": [
+    "Elásticos"
+   ]
+  },
+  {
+   "name": "Superman",
+   "primary": "costas",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Desenvolvimento com Halteres",
+   "primary": "ombros",
+   "secondary": [
+    "triceps"
+   ],
+   "equipment": [
+    "Halteres até 30kg"
+   ]
+  },
+  {
+   "name": "Desenvolvimento Máquina",
+   "primary": "ombros",
+   "secondary": [
+    "triceps"
+   ],
+   "equipment": [
+    "Desenvolvimento Máquina"
+   ]
+  },
+  {
+   "name": "Elevação Lateral",
+   "primary": "ombros",
+   "secondary": [],
+   "equipment": [
+    "Halteres até 10kg"
+   ]
+  },
+  {
+   "name": "Elevação Lateral com Elástico",
+   "primary": "ombros",
+   "secondary": [],
+   "equipment": [
+    "Elásticos"
+   ]
+  },
+  {
+   "name": "Flexão Pike",
+   "primary": "ombros",
+   "secondary": [
+    "triceps"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Rosca Direta com Barra W",
+   "primary": "biceps",
+   "secondary": [],
+   "equipment": [
+    "Barra W",
+    "Anilhas até 100kg"
+   ]
+  },
+  {
+   "name": "Rosca Alternada com Halteres",
+   "primary": "biceps",
+   "secondary": [],
+   "equipment": [
+    "Halteres até 10kg"
+   ]
+  },
+  {
+   "name": "Rosca Martelo",
+   "primary": "biceps",
+   "secondary": [],
+   "equipment": [
+    "Halteres até 30kg"
+   ]
+  },
+  {
+   "name": "Rosca com Elástico",
+   "primary": "biceps",
+   "secondary": [],
+   "equipment": [
+    "Elásticos"
+   ]
+  },
+  {
+   "name": "Tríceps na Polia",
+   "primary": "triceps",
+   "secondary": [],
+   "equipment": [
+    "Polia Alta"
+   ]
+  },
+  {
+   "name": "Tríceps Testa com Barra W",
+   "primary": "triceps",
+   "secondary": [],
+   "equipment": [
+    "Barra W",
+    "Anilhas até 100kg",
+    "Banco Reto"
+   ]
+  },
+  {
+   "name": "Tríceps Francês com Halter",
+   "primary": "triceps",
+   "secondary": [],
+   "equipment": [
+    "Halteres até 10kg"
+   ]
+  },
+  {
+   "name": "Flexão Diamante",
+   "primary": "triceps",
+   "secondary": [
+    "peito"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Agachamento Livre",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos",
+    "posteriores"
+   ],
+   "equipment": [
+    "Barra Olímpica 20kg",
+    "Anilhas até 100kg",
+    "Rack de Agachamento"
+   ]
+  },
+  {
+   "name": "Agachamento no Smith",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": [
+    "Smith",
+    "Anilhas até 100kg"
+   ]
+  },
+  {
+   "name": "Leg Press 45",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": [
+    "Leg Press 45",
+    "Anilhas até 200kg"
+   ]
+  },
+  {
+   "name": "Leg Press 90",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": [
+    "Leg Press 90"
+   ]
+  },
+  {
+   "name": "Cadeira Extensora",
+   "primary": "quadriceps",
+   "secondary": [],
+   "equipment": [
+    "Cadeira Extensora"
+   ]
+  },
+  {
+   "name": "Agachamento Goblet",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": [
+    "Kettlebell até 16kg"
+   ]
+  },
+  {
+   "name": "Agachamento com Peso Corporal",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Afundo",
+   "primary": "quadriceps",
+   "secondary": [
+    "gluteos",
+    "posteriores"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Levantamento Terra",
+   "primary": "posteriores",
+   "secondary": [
+    "costas",
+    "gluteos"
+   ],
+   "equipment": [
+    "Barra Olímpica 20kg",
+    "Anilhas até 100kg"
+   ]
+  },
+  {
+   "name": "Stiff com Halteres",
+   "primary": "posteriores",
+   "secondary": [
+    "gluteos"
+   ],
+   "equipment": [
+    "Halteres até 30kg"
+   ]
+  },
+  {
+   "name": "Mesa Flexora",
+   "primary": "posteriores",
+   "secondary": [],
+   "equipment": [
+    "Mesa Flexora"
+   ]
+  },
+  {
+   "name": "Cadeira Flexora",
+   "primary": "posteriores",
+   "secondary": [],
+   "equipment": [
+    "Cadeira Flexora"
+   ]
+  },
+  {
+   "name": "Flexão Nórdica",
+   "primary": "posteriores",
+   "secondary": [],
+   "equipment": []
+  },
+  {
+   "name": "Elevação Pélvica com Barra",
+   "primary": "gluteos",
+   "secondary": [
+    "posteriores"
+   ],
+   "equipment": [
+    "Barra Olímpica 20kg",
+    "Anilhas até 100kg",
+    "Banco Reto"
+   ]
+  },
+  {
+   "name": "Cadeira Abdutora",
+   "primary": "gluteos",
+   "secondary": [],
+   "equipment": [
+    "Cadeira Abdutora"
+   ]
+  },
+  {
+   "name": "Swing com Kettlebell",
+   "primary": "gluteos",
+   "secondary": [
+    "posteriores"
+   ],
+   "equipment": [
+    "Kettlebell até 16kg"
+   ]
+  },
+  {
+   "name": "Ponte de Glúteos",
+   "primary": "gluteos",
+   "secondary": [
+    "posteriores"
+   ],
+   "equipment": []
+  },
+  {
+   "name": "Panturrilha na Máquina",
+   "primary": "panturrilhas",
+   "secondary": [],
+   "equipment": [
+    "Panturrilha Máquina"
+   ]
+  },
+  {
+   "name": "Panturrilha no Leg Press",
+   "primary": "panturrilhas",
+   "secondary": [],
+   "equipment": [
+    "Leg Press 45",
+    "Anilhas até 100kg"
+   ]
+  },
+  {
+   "name": "Panturrilha em Pé",
+   "primary": "panturrilhas",
+   "secondary": [],
+   "equipment": []
+  },
+  {
+   "name": "Abdominal Supra",
+   "primary": "abdomen",
+   "secondary": [],
+   "equipment": []
+  },
+  {
+   "name": "Prancha",
+   "primary": "abdomen",
+   "secondary": [],
+   "equipment": [],
+   "mode": "time"
+  },
+  {
+   "name": "Elevação de Pernas na Barra",
+   "primary": "abdomen",
+   "secondary": [],
+   "equipment": [
+    "Barra Fixa"
+   ]
+  },
+  {
+   "name": "Abdominal na Polia",
+   "primary": "abdomen",
+   "secondary": [],
+   "equipment": [
+    "Polia Alta"
+   ]
+  }
+ ]
+}
