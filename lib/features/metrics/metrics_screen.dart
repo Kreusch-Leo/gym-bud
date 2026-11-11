@@ -25,13 +25,6 @@ final List<_Series> _series = [
   (label: 'Coxa', unit: 'cm', value: (p) => p.metric.thighCm),
 ];
 
-String bmiCategory(double bmi) => switch (bmi) {
-  < 18.5 => 'abaixo do peso',
-  < 25 => 'peso normal',
-  < 30 => 'sobrepeso',
-  _ => 'obesidade',
-};
-
 class MetricsScreen extends ConsumerStatefulWidget {
   const MetricsScreen({super.key});
 

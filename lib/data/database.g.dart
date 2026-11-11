@@ -1526,6 +1526,15 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
     requiredDuringInsert: false,
   );
   @override
+  late final GeneratedColumnWithTypeConverter<Effort?, String> effort =
+      GeneratedColumn<String>(
+        'effort',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<Effort?>($WorkoutsTable.$convertereffortn);
+  @override
   List<GeneratedColumn> get $columns => [
     id,
     startedAt,
@@ -1534,6 +1543,7 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
     restCustomSec,
     restEndsAt,
     timerEndsAt,
+    effort,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1634,6 +1644,12 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}timer_ends_at'],
       ),
+      effort: $WorkoutsTable.$convertereffortn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}effort'],
+        ),
+      ),
     );
   }
 
@@ -1641,6 +1657,11 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
   $WorkoutsTable createAlias(String alias) {
     return $WorkoutsTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<Effort, String, String> $convertereffort =
+      const EnumNameConverter<Effort>(Effort.values);
+  static JsonTypeConverter2<Effort?, String?, String?> $convertereffortn =
+      JsonTypeConverter2.asNullable($convertereffort);
 }
 
 class Workout extends DataClass implements Insertable<Workout> {
@@ -1657,6 +1678,9 @@ class Workout extends DataClass implements Insertable<Workout> {
 
   /// Fim da contagem do exercício por tempo em andamento; `null` = parada.
   final DateTime? timerEndsAt;
+
+  /// Percepção de esforço informada na conclusão; `null` = não informada.
+  final Effort? effort;
   const Workout({
     required this.id,
     required this.startedAt,
@@ -1665,6 +1689,7 @@ class Workout extends DataClass implements Insertable<Workout> {
     this.restCustomSec,
     this.restEndsAt,
     this.timerEndsAt,
+    this.effort,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1685,6 +1710,11 @@ class Workout extends DataClass implements Insertable<Workout> {
     }
     if (!nullToAbsent || timerEndsAt != null) {
       map['timer_ends_at'] = Variable<DateTime>(timerEndsAt);
+    }
+    if (!nullToAbsent || effort != null) {
+      map['effort'] = Variable<String>(
+        $WorkoutsTable.$convertereffortn.toSql(effort),
+      );
     }
     return map;
   }
@@ -1708,6 +1738,9 @@ class Workout extends DataClass implements Insertable<Workout> {
       timerEndsAt: timerEndsAt == null && nullToAbsent
           ? const Value.absent()
           : Value(timerEndsAt),
+      effort: effort == null && nullToAbsent
+          ? const Value.absent()
+          : Value(effort),
     );
   }
 
@@ -1724,6 +1757,9 @@ class Workout extends DataClass implements Insertable<Workout> {
       restCustomSec: serializer.fromJson<int?>(json['restCustomSec']),
       restEndsAt: serializer.fromJson<DateTime?>(json['restEndsAt']),
       timerEndsAt: serializer.fromJson<DateTime?>(json['timerEndsAt']),
+      effort: $WorkoutsTable.$convertereffortn.fromJson(
+        serializer.fromJson<String?>(json['effort']),
+      ),
     );
   }
   @override
@@ -1737,6 +1773,9 @@ class Workout extends DataClass implements Insertable<Workout> {
       'restCustomSec': serializer.toJson<int?>(restCustomSec),
       'restEndsAt': serializer.toJson<DateTime?>(restEndsAt),
       'timerEndsAt': serializer.toJson<DateTime?>(timerEndsAt),
+      'effort': serializer.toJson<String?>(
+        $WorkoutsTable.$convertereffortn.toJson(effort),
+      ),
     };
   }
 
@@ -1748,6 +1787,7 @@ class Workout extends DataClass implements Insertable<Workout> {
     Value<int?> restCustomSec = const Value.absent(),
     Value<DateTime?> restEndsAt = const Value.absent(),
     Value<DateTime?> timerEndsAt = const Value.absent(),
+    Value<Effort?> effort = const Value.absent(),
   }) => Workout(
     id: id ?? this.id,
     startedAt: startedAt ?? this.startedAt,
@@ -1758,6 +1798,7 @@ class Workout extends DataClass implements Insertable<Workout> {
         : this.restCustomSec,
     restEndsAt: restEndsAt.present ? restEndsAt.value : this.restEndsAt,
     timerEndsAt: timerEndsAt.present ? timerEndsAt.value : this.timerEndsAt,
+    effort: effort.present ? effort.value : this.effort,
   );
   Workout copyWithCompanion(WorkoutsCompanion data) {
     return Workout(
@@ -1774,6 +1815,7 @@ class Workout extends DataClass implements Insertable<Workout> {
       timerEndsAt: data.timerEndsAt.present
           ? data.timerEndsAt.value
           : this.timerEndsAt,
+      effort: data.effort.present ? data.effort.value : this.effort,
     );
   }
 
@@ -1786,7 +1828,8 @@ class Workout extends DataClass implements Insertable<Workout> {
           ..write('gymId: $gymId, ')
           ..write('restCustomSec: $restCustomSec, ')
           ..write('restEndsAt: $restEndsAt, ')
-          ..write('timerEndsAt: $timerEndsAt')
+          ..write('timerEndsAt: $timerEndsAt, ')
+          ..write('effort: $effort')
           ..write(')'))
         .toString();
   }
@@ -1800,6 +1843,7 @@ class Workout extends DataClass implements Insertable<Workout> {
     restCustomSec,
     restEndsAt,
     timerEndsAt,
+    effort,
   );
   @override
   bool operator ==(Object other) =>
@@ -1811,7 +1855,8 @@ class Workout extends DataClass implements Insertable<Workout> {
           other.gymId == this.gymId &&
           other.restCustomSec == this.restCustomSec &&
           other.restEndsAt == this.restEndsAt &&
-          other.timerEndsAt == this.timerEndsAt);
+          other.timerEndsAt == this.timerEndsAt &&
+          other.effort == this.effort);
 }
 
 class WorkoutsCompanion extends UpdateCompanion<Workout> {
@@ -1822,6 +1867,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
   final Value<int?> restCustomSec;
   final Value<DateTime?> restEndsAt;
   final Value<DateTime?> timerEndsAt;
+  final Value<Effort?> effort;
   const WorkoutsCompanion({
     this.id = const Value.absent(),
     this.startedAt = const Value.absent(),
@@ -1830,6 +1876,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     this.restCustomSec = const Value.absent(),
     this.restEndsAt = const Value.absent(),
     this.timerEndsAt = const Value.absent(),
+    this.effort = const Value.absent(),
   });
   WorkoutsCompanion.insert({
     this.id = const Value.absent(),
@@ -1839,6 +1886,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     this.restCustomSec = const Value.absent(),
     this.restEndsAt = const Value.absent(),
     this.timerEndsAt = const Value.absent(),
+    this.effort = const Value.absent(),
   }) : startedAt = Value(startedAt);
   static Insertable<Workout> custom({
     Expression<int>? id,
@@ -1848,6 +1896,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     Expression<int>? restCustomSec,
     Expression<DateTime>? restEndsAt,
     Expression<DateTime>? timerEndsAt,
+    Expression<String>? effort,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1857,6 +1906,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
       if (restCustomSec != null) 'rest_custom_sec': restCustomSec,
       if (restEndsAt != null) 'rest_ends_at': restEndsAt,
       if (timerEndsAt != null) 'timer_ends_at': timerEndsAt,
+      if (effort != null) 'effort': effort,
     });
   }
 
@@ -1868,6 +1918,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     Value<int?>? restCustomSec,
     Value<DateTime?>? restEndsAt,
     Value<DateTime?>? timerEndsAt,
+    Value<Effort?>? effort,
   }) {
     return WorkoutsCompanion(
       id: id ?? this.id,
@@ -1877,6 +1928,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
       restCustomSec: restCustomSec ?? this.restCustomSec,
       restEndsAt: restEndsAt ?? this.restEndsAt,
       timerEndsAt: timerEndsAt ?? this.timerEndsAt,
+      effort: effort ?? this.effort,
     );
   }
 
@@ -1904,6 +1956,11 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
     if (timerEndsAt.present) {
       map['timer_ends_at'] = Variable<DateTime>(timerEndsAt.value);
     }
+    if (effort.present) {
+      map['effort'] = Variable<String>(
+        $WorkoutsTable.$convertereffortn.toSql(effort.value),
+      );
+    }
     return map;
   }
 
@@ -1916,7 +1973,8 @@ class WorkoutsCompanion extends UpdateCompanion<Workout> {
           ..write('gymId: $gymId, ')
           ..write('restCustomSec: $restCustomSec, ')
           ..write('restEndsAt: $restEndsAt, ')
-          ..write('timerEndsAt: $timerEndsAt')
+          ..write('timerEndsAt: $timerEndsAt, ')
+          ..write('effort: $effort')
           ..write(')'))
         .toString();
   }
@@ -5501,6 +5559,7 @@ typedef $$WorkoutsTableCreateCompanionBuilder = WorkoutsCompanion Function({
   Value<int?> restCustomSec,
   Value<DateTime?> restEndsAt,
   Value<DateTime?> timerEndsAt,
+  Value<Effort?> effort,
 });
 typedef $$WorkoutsTableUpdateCompanionBuilder = WorkoutsCompanion Function({
   Value<int> id,
@@ -5510,6 +5569,7 @@ typedef $$WorkoutsTableUpdateCompanionBuilder = WorkoutsCompanion Function({
   Value<int?> restCustomSec,
   Value<DateTime?> restEndsAt,
   Value<DateTime?> timerEndsAt,
+  Value<Effort?> effort,
 });
 
 final class $$WorkoutsTableReferences
@@ -5592,6 +5652,12 @@ class $$WorkoutsTableFilterComposer
     column: $table.timerEndsAt,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<Effort?, Effort, String> get effort =>
+      $composableBuilder(
+        column: $table.effort,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   $$GymsTableFilterComposer get gymId {
     final $$GymsTableFilterComposer composer = $composerBuilder(
@@ -5681,6 +5747,11 @@ class $$WorkoutsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get effort => $composableBuilder(
+    column: $table.effort,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$GymsTableOrderingComposer get gymId {
     final $$GymsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -5737,6 +5808,9 @@ class $$WorkoutsTableAnnotationComposer
     column: $table.timerEndsAt,
     builder: (column) => column,
   );
+
+  GeneratedColumnWithTypeConverter<Effort?, String> get effort =>
+      $composableBuilder(column: $table.effort, builder: (column) => column);
 
   $$GymsTableAnnotationComposer get gymId {
     final $$GymsTableAnnotationComposer composer = $composerBuilder(
@@ -5822,6 +5896,7 @@ class $$WorkoutsTableTableManager
                 Value<int?> restCustomSec = const Value.absent(),
                 Value<DateTime?> restEndsAt = const Value.absent(),
                 Value<DateTime?> timerEndsAt = const Value.absent(),
+                Value<Effort?> effort = const Value.absent(),
               }) => WorkoutsCompanion(
                 id: id,
                 startedAt: startedAt,
@@ -5830,6 +5905,7 @@ class $$WorkoutsTableTableManager
                 restCustomSec: restCustomSec,
                 restEndsAt: restEndsAt,
                 timerEndsAt: timerEndsAt,
+                effort: effort,
               ),
           createCompanionCallback:
               ({
@@ -5840,6 +5916,7 @@ class $$WorkoutsTableTableManager
                 Value<int?> restCustomSec = const Value.absent(),
                 Value<DateTime?> restEndsAt = const Value.absent(),
                 Value<DateTime?> timerEndsAt = const Value.absent(),
+                Value<Effort?> effort = const Value.absent(),
               }) => WorkoutsCompanion.insert(
                 id: id,
                 startedAt: startedAt,
@@ -5848,6 +5925,7 @@ class $$WorkoutsTableTableManager
                 restCustomSec: restCustomSec,
                 restEndsAt: restEndsAt,
                 timerEndsAt: timerEndsAt,
+                effort: effort,
               ),
           withReferenceMapper: (p0) => p0
               .map(

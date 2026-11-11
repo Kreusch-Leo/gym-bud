@@ -17,3 +17,7 @@ String formatDuration(Duration d) {
 /// Sem casas decimais desnecessárias: `20`, `22.5`.
 String formatNumber(double n) =>
     n == n.roundToDouble() ? n.round().toString() : n.toStringAsFixed(1);
+
+/// `3.3 kcal` abaixo de 10, `538 kcal` daí em diante.
+String formatKcal(double kcal) =>
+    '${kcal.toStringAsFixed(kcal < 10 ? 1 : 0)} kcal';

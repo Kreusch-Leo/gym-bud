@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 
+import '../core/effort.dart';
 import '../core/muscle_group.dart';
 import '../core/tracking_mode.dart';
 import 'database.dart';
@@ -15,7 +16,7 @@ import 'database.dart';
 ///   "exercises": [{"name": "...", "primary": "peito", "secondary": ["triceps"],
 ///                  "equipment": ["Barra Olímpica 20kg"], "media": null, "mode": "reps"}],
 ///   "gyms": [{"name": "...", "lat": 0, "lng": 0, "radius": 100, "equipment": []}],
-///   "workouts": [{"startedAt": "ISO-8601", "endedAt": "ISO-8601", "gym": "...",
+///   "workouts": [{"startedAt": "ISO-8601", "endedAt": "ISO-8601", "gym": "...", "effort": "right",
 ///                 "exercises": [{"exercise": "...", "sets": [{"weight": 20, "reps": 10, "at": "ISO-8601"},
 ///                                                            {"weight": 0, "seconds": 30, "at": "ISO-8601"}]}]}],
 ///   "metrics": [{"date": "ISO-8601", "weightKg": 80, "heightCm": 180, ...}]
@@ -149,6 +150,7 @@ Future<ImportResult> importBackup(AppDatabase db, String source) async {
                       .toLocal(),
                 ),
                 gymId: Value(gymIds[w['gym']]),
+                effort: Value(Effort.tryParse(w['effort'] as String?)),
               ),
             );
         result.workouts++;
@@ -277,6 +279,7 @@ Future<String> exportBackup(AppDatabase db) async {
           'startedAt': iso(w.startedAt),
           'endedAt': iso(w.endedAt!),
           'gym': gyms[w.gymId]?.name,
+          'effort': w.effort?.name,
           'exercises': [
             for (final we in workoutExercises)
               if (we.workoutId == w.id)

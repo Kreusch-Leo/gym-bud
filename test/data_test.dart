@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:gym_bud/core/effort.dart';
 import 'package:gym_bud/core/tracking_mode.dart';
 import 'package:gym_bud/data/backup.dart';
 import 'package:gym_bud/data/database.dart';
@@ -324,5 +325,82 @@ void main() {
     expect(bmi(80, 180), closeTo(24.69, 0.01));
     expect(bmi(null, 180), isNull);
     expect(bmi(80, null), isNull);
+  });
+
+  test('visão geral e conclusão: estimativa, reinício e esforço', () async {
+    final db = open();
+    addTearDown(db.close);
+    final repo = WorkoutRepository(db);
+    final exercises = await CatalogRepository(db).watchExercises().first;
+    final plank = exercises
+        .singleWhere((e) => e.exercise.name == 'Prancha')
+        .exercise;
+    final other = exercises
+        .firstWhere((e) => e.exercise.id != plank.id)
+        .exercise;
+
+    final id = await repo.start(exerciseIds: [plank.id, other.id]);
+    var active = (await repo.watchActive().first)!;
+    final [timed, byReps] = active.entries.map((e) => e.link).toList();
+    await repo.setTargets(timed.id, sets: 2, seconds: 40);
+    await repo.setTargets(byReps.id, sets: 1, reps: 10, weightKg: 20);
+    active = (await repo.watchActive().first)!;
+    expect(active.targetSets, 3);
+    // 2 × (40 s + 30 s de descanso) + 1 × (10 × 3 s + 75 s de descanso).
+    expect(active.estimatedRemaining, const Duration(seconds: 245));
+
+    await repo.completeSet(timed.id);
+    active = (await repo.watchActive().first)!;
+    expect(active.totalSets, 1);
+    expect(active.estimatedRemaining, const Duration(seconds: 175));
+
+    await repo.restart(id);
+    active = (await repo.watchActive().first)!;
+    expect(active.workout.id, id);
+    expect(active.totalSets, 0);
+    expect(active.workout.restEndsAt, isNull);
+    expect(active.entries.map((e) => e.link.done), everyElement(isFalse));
+    expect(active.entries.map((e) => e.link.targetSeconds).first, 40);
+
+    await repo.completeSet(timed.id);
+    await repo.finish(id);
+    await repo.setEffort(id, Effort.right);
+    final saved = (await repo.watchHistory().first).single;
+    expect(saved.workout.effort, Effort.right);
+
+    // O esforço vai e volta no backup.
+    final restored = open(seed: false);
+    addTearDown(restored.close);
+    await importBackup(restored, await exportBackup(db));
+    final copy = (await WorkoutRepository(
+      restored,
+    ).watchHistory().first).single;
+    expect(copy.workout.effort, Effort.right);
+  });
+
+  test('estimativa de calorias: MET 5 × peso × horas', () {
+    expect(estimateKcal(const Duration(minutes: 30), 80), 200);
+    expect(estimateKcal(const Duration(hours: 1), null), 350);
+  });
+
+  test('migração da v2 acrescenta o esforço sem perder treinos', () async {
+    final db = AppDatabase(
+      executor: NativeDatabase.memory(
+        setup: (raw) => raw.execute('''
+          CREATE TABLE gyms (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL UNIQUE,
+            latitude REAL NULL, longitude REAL NULL, radius_m REAL NOT NULL DEFAULT 100.0);
+          CREATE TABLE workouts (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, started_at INTEGER NOT NULL,
+            ended_at INTEGER NULL, gym_id INTEGER NULL REFERENCES gyms (id) ON DELETE SET NULL,
+            rest_custom_sec INTEGER NULL, rest_ends_at INTEGER NULL, timer_ends_at INTEGER NULL);
+          INSERT INTO workouts (started_at, ended_at, rest_custom_sec) VALUES (1000, 2000, 45);
+          PRAGMA user_version = 2;
+        '''),
+      ),
+    );
+    addTearDown(db.close);
+    final before = await db.select(db.workouts).getSingle();
+    expect((before.restCustomSec, before.effort), (45, null));
+    await WorkoutRepository(db).setEffort(before.id, Effort.hard);
+    expect((await db.select(db.workouts).getSingle()).effort, Effort.hard);
   });
 }

@@ -52,6 +52,17 @@ final metricsProvider = StreamProvider(
   (ref) => ref.watch(metricsRepoProvider).watchAll(),
 );
 
+/// Peso e altura mais recentes — cada um vem da última medição que o informou.
+final latestBodyProvider = Provider<({double? weightKg, double? heightCm})>((
+  ref,
+) {
+  final metrics = ref.watch(metricsProvider).value ?? const <BodyMetric>[];
+  return (
+    weightKg: metrics.reversed.map((m) => m.weightKg).nonNulls.firstOrNull,
+    heightCm: metrics.reversed.map((m) => m.heightCm).nonNulls.firstOrNull,
+  );
+});
+
 enum LocationSource { locating, gps, manual, unknown }
 
 class LocationState {

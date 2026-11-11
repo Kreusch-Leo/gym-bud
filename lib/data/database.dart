@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../core/effort.dart';
 import '../core/muscle_group.dart';
 import '../core/tracking_mode.dart';
 import 'backup.dart';
@@ -91,6 +92,9 @@ class Workouts extends Table {
 
   /// Fim da contagem do exercício por tempo em andamento; `null` = parada.
   DateTimeColumn get timerEndsAt => dateTime().nullable()();
+
+  /// Percepção de esforço informada na conclusão; `null` = não informada.
+  TextColumn get effort => textEnum<Effort>().nullable()();
 }
 
 class WorkoutExercises extends Table {
@@ -160,7 +164,7 @@ class AppDatabase extends _$AppDatabase {
   final Future<String> Function()? loadSeed;
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -180,12 +184,19 @@ class AppDatabase extends _$AppDatabase {
         await m.alterTable(
           TableMigration(
             workouts,
-            newColumns: [workouts.restCustomSec, workouts.timerEndsAt],
+            newColumns: [
+              workouts.restCustomSec,
+              workouts.timerEndsAt,
+              workouts.effort,
+            ],
           ),
         );
         await m.alterTable(
           TableMigration(workoutSets, newColumns: [workoutSets.durationSec]),
         );
+      } else if (from < 3) {
+        // Quem vem da v1 já ganhou a coluna ao recriar a tabela acima.
+        await m.addColumn(workouts, workouts.effort);
       }
     },
     beforeOpen: (details) async {

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '../core/effort.dart';
 import '../core/muscle_group.dart';
 import '../core/tracking_mode.dart';
 import 'database.dart';
@@ -33,6 +34,30 @@ class WorkoutDetail {
   final List<WorkoutEntry> entries;
 
   int get totalSets => entries.fold(0, (sum, e) => sum + e.sets.length);
+
+  /// Séries previstas: a meta de cada exercício.
+  int get targetSets => entries.fold(0, (sum, e) => sum + e.link.targetSets);
+
+  /// Tempo de treino: até o fim, ou até agora se ainda está ativo.
+  Duration get elapsed =>
+      (workout.endedAt ?? DateTime.now()).difference(workout.startedAt);
+
+  /// Duração prevista do que ainda falta: execução das séries mais os descansos.
+  Duration get estimatedRemaining {
+    var total = Duration.zero;
+    for (final e in entries) {
+      final link = e.link;
+      total += estimateSets(
+        sets: link.targetSets - e.sets.length,
+        mode: link.mode,
+        reps: link.targetReps,
+        seconds: link.targetSeconds,
+        weightKg: link.targetWeightKg,
+        restCustomSec: workout.restCustomSec,
+      );
+    }
+    return total;
+  }
 
   /// Volume de carga: soma de carga × repetições (séries por tempo não contam).
   double get totalLoadKg => entries.fold(
@@ -449,6 +474,32 @@ class WorkoutRepository {
         WorkoutsCompanion(timerEndsAt: Value(endsAt)),
       );
 
+  Future<void> setEffort(int workoutId, Effort? effort) =>
+      (db.update(db.workouts)..where((t) => t.id.equals(workoutId))).write(
+        WorkoutsCompanion(effort: Value(effort)),
+      );
+
+  /// Recomeça o treino ativo do zero: mesmos exercícios e metas, sem séries e com o
+  /// relógio zerado.
+  Future<void> restart(int workoutId) => db.transaction(() async {
+    final links = db.selectOnly(db.workoutExercises)
+      ..addColumns([db.workoutExercises.id])
+      ..where(db.workoutExercises.workoutId.equals(workoutId));
+    await (db.delete(
+      db.workoutSets,
+    )..where((t) => t.workoutExerciseId.isInQuery(links))).go();
+    await (db.update(db.workoutExercises)
+          ..where((t) => t.workoutId.equals(workoutId)))
+        .write(const WorkoutExercisesCompanion(done: Value(false)));
+    await (db.update(db.workouts)..where((t) => t.id.equals(workoutId))).write(
+      WorkoutsCompanion(
+        startedAt: Value(DateTime.now()),
+        restEndsAt: const Value(null),
+        timerEndsAt: const Value(null),
+      ),
+    );
+  });
+
   /// `null` volta ao descanso inteligente.
   Future<void> setRestCustom(int workoutId, int? seconds) =>
       (db.update(db.workouts)..where((t) => t.id.equals(workoutId))).write(
@@ -508,6 +559,42 @@ double? bmi(double? weightKg, double? heightCm) {
   final m = heightCm / 100;
   return weightKg / (m * m);
 }
+
+String bmiCategory(double bmi) => switch (bmi) {
+  < 18.5 => 'abaixo do peso',
+  < 25 => 'peso normal',
+  < 30 => 'sobrepeso',
+  _ => 'obesidade',
+};
+
+/// Ritmo assumido para estimar a duração de uma série por repetições.
+const secondsPerRep = 3;
+
+/// Duração prevista de [sets] séries: a execução mais o descanso depois de cada uma.
+/// Os padrões são os das colunas de `WorkoutExercises` (exercício ainda sem metas).
+Duration estimateSets({
+  required int sets,
+  required TrackingMode mode,
+  int reps = 12,
+  int seconds = 30,
+  double weightKg = 0,
+  int? restCustomSec,
+}) {
+  if (sets <= 0) return Duration.zero;
+  final work = mode == TrackingMode.time ? seconds : reps * secondsPerRep;
+  final rest =
+      restCustomSec ??
+      smartRestSec(mode: mode, weightKg: weightKg, sameExercise: true);
+  return Duration(seconds: sets * (work + rest));
+}
+
+/// Peso assumido na estimativa de calorias enquanto não há medição.
+const defaultBodyWeightKg = 70.0;
+
+/// Estimativa de gasto calórico: MET × peso (kg) × horas, com MET 5 (treino de força
+/// / calistenia em ritmo moderado). É uma aproximação, não uma medição.
+double estimateKcal(Duration duration, double? bodyWeightKg) =>
+    5 * (bodyWeightKg ?? defaultBodyWeightKg) * duration.inSeconds / 3600;
 
 /// Descanso inteligente, em segundos: mais longo com carga e ao trocar de exercício.
 int smartRestSec({
