@@ -1,5 +1,7 @@
 import 'package:intl/intl.dart';
 
+import 'tracking_mode.dart';
+
 final _date = DateFormat('dd/MM/yyyy');
 final _dateTime = DateFormat('dd/MM/yyyy HH:mm');
 
@@ -21,3 +23,12 @@ String formatNumber(double n) =>
 /// `3.3 kcal` abaixo de 10, `538 kcal` daí em diante.
 String formatKcal(double kcal) =>
     '${kcal.toStringAsFixed(kcal < 10 ? 1 : 0)} kcal';
+
+/// Meta de uma série: `×12` ou `00:30`, conforme o modo.
+String formatTarget(
+  TrackingMode mode, {
+  required int reps,
+  required int seconds,
+}) => mode == TrackingMode.time
+    ? formatDuration(Duration(seconds: seconds))
+    : '×$reps';

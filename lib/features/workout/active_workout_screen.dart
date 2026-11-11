@@ -12,6 +12,7 @@ import '../../data/database.dart';
 import '../../data/repositories.dart';
 import '../../providers.dart';
 import '../exercises/exercise_list.dart';
+import 'workout_complete_screen.dart';
 
 const _tabular = [FontFeature.tabularFigures()];
 
@@ -95,7 +96,7 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       final restEndsAt = await _repo.completeSet(entry.link.id);
       _paused = null;
       if (restEndsAt == null) {
-        await _close(saved: await _repo.finish(detail.workout.id));
+        await _close(savedId: await _finishAndGetId(detail.workout));
         return;
       }
       await ref.read(notificationsProvider).scheduleRestEnd(restEndsAt);
@@ -214,8 +215,12 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
     )) {
       return;
     }
-    await _close(saved: await _repo.finish(detail.workout.id));
+    await _close(savedId: await _finishAndGetId(detail.workout));
   }
+
+  /// `null` quando nada foi registrado: o treino vazio é apagado em vez de salvo.
+  Future<int?> _finishAndGetId(Workout workout) async =>
+      await _repo.finish(workout.id) ? workout.id : null;
 
   Future<void> _discard(Workout workout) async {
     if (!await _confirm(
@@ -226,24 +231,28 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
       return;
     }
     await _repo.delete(workout.id);
-    await _close(saved: false);
+    await _close(savedId: null);
   }
 
-  Future<void> _close({required bool saved}) async {
+  /// Treino salvo segue para a tela de conclusão; sem nada salvo, volta ao início.
+  Future<void> _close({required int? savedId}) async {
     final notifications = ref.read(notificationsProvider);
     await notifications.cancelRestEnd();
     await notifications.cancelWorkoutRunning();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          saved
-              ? 'Treino salvo no histórico.'
-              : 'Treino descartado (nada salvo).',
+    final navigator = Navigator.of(context);
+    if (savedId != null) {
+      await navigator.pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => WorkoutCompleteScreen(workoutId: savedId),
         ),
-      ),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Treino descartado (nada salvo).')),
     );
-    Navigator.of(context).pop();
+    navigator.popUntil((route) => route.isFirst);
   }
 
   Future<bool> _confirm(String title, String message, String action) async =>
@@ -697,9 +706,8 @@ class _ActiveWorkoutScreenState extends ConsumerState<ActiveWorkoutScreen> {
 }
 
 /// `×12` ou `00:30`, conforme o modo.
-String _targetLabel(WorkoutExercise link) => link.mode == TrackingMode.time
-    ? formatDuration(Duration(seconds: link.targetSeconds))
-    : '×${link.targetReps}';
+String _targetLabel(WorkoutExercise link) =>
+    formatTarget(link.mode, reps: link.targetReps, seconds: link.targetSeconds);
 
 /// Arredonda para cima, para a contagem mostrar `00:30` ao iniciar e só chegar a
 /// `00:00` no fim.

@@ -11,7 +11,7 @@ import '../../data/backup.dart';
 import '../../data/repositories.dart';
 import '../../planner/planner.dart';
 import '../../providers.dart';
-import '../workout/active_workout_screen.dart';
+import '../workout/workout_overview_screen.dart';
 
 class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key});
@@ -50,7 +50,7 @@ class TodayScreen extends ConsumerWidget {
                   '${active.totalSets} séries',
                 ),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () => _openWorkout(context),
+                onTap: () => _openOverview(context),
               ),
             ),
           suggestion.when(
@@ -119,26 +119,13 @@ class TodayScreen extends ConsumerWidget {
   }
 }
 
-void _openWorkout(BuildContext context) =>
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => const ActiveWorkoutScreen()));
-
-/// Inicia (ou retoma) o treino no local atual e abre a tela de Treino Ativo.
-Future<void> startWorkout(
-  BuildContext context,
-  WidgetRef ref,
-  List<int> exerciseIds,
-) async {
-  final notifications = ref.read(notificationsProvider);
-  final repo = ref.read(workoutRepoProvider);
-  await repo.start(
-    gymId: ref.read(locationProvider).gymId,
-    exerciseIds: exerciseIds,
-  );
-  await notifications.requestPermissions();
-  await notifications.showWorkoutRunning(DateTime.now());
-  if (context.mounted) _openWorkout(context);
-}
+/// Visão geral do treino em andamento ou, sem um, do plano em [exerciseIds].
+void _openOverview(BuildContext context, [List<int> exerciseIds = const []]) =>
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => WorkoutOverviewScreen(exerciseIds: exerciseIds),
+      ),
+    );
 
 class _Loading extends StatelessWidget {
   const _Loading(this.text);
@@ -306,10 +293,10 @@ class _SuggestionCard extends ConsumerWidget {
                   width: double.infinity,
                   height: 56,
                   child: FilledButton.icon(
-                    icon: const Icon(Icons.play_arrow),
-                    label: const Text('Iniciar treino sugerido'),
+                    icon: const Icon(Icons.chevron_right),
+                    label: const Text('Ver treino sugerido'),
                     onPressed: () =>
-                        startWorkout(context, ref, suggestion.exerciseIds),
+                        _openOverview(context, suggestion.exerciseIds),
                   ),
                 ),
               ),

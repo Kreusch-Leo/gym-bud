@@ -570,6 +570,9 @@ String bmiCategory(double bmi) => switch (bmi) {
 /// Ritmo assumido para estimar a duração de uma série por repetições.
 const secondsPerRep = 3;
 
+/// Séries por exercício quando ainda não há meta (padrão de `WorkoutExercises`).
+const defaultTargetSets = 3;
+
 /// Duração prevista de [sets] séries: a execução mais o descanso depois de cada uma.
 /// Os padrões são os das colunas de `WorkoutExercises` (exercício ainda sem metas).
 Duration estimateSets({
